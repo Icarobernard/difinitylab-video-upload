@@ -83,7 +83,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen }) => {
         }, 3000);
       },
       onError: (error) => {
-        console.error('Authentication error:', error);
+        console.error('Erro na autenticação:', error);
         setValidationMessage(
           'Erro na autenticação. Verifique suas credenciais.'
         );
@@ -99,7 +99,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen }) => {
 
     if (isLogin) {
       mutation.mutate({
-        action: 'login',
         email,
         password,
       });

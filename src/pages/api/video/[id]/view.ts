@@ -25,10 +25,10 @@ export default async function handler(
 
       return res.status(200).json(updatedVideo);
     } catch (error) {
-      console.error('Error updating video views:', error);
-      return res.status(500).json({ error: 'Failed to update video views' });
+      console.error('Erro ao atualizar visualização do vídeo:', error);
+      return res.status(500).json({ error: 'Falha ao atualizar a visualização do vídeo' });
     }
   } else {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return res.status(405).json({ error: 'Operação não permitida' });
   }
 }

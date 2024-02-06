@@ -14,7 +14,7 @@ const Navbar: React.FC<NavbarProps> = ({ searchTerm, onSearchTermChange }) => {
   const [auth, setAuth] = useState(false);
   const [uploadModal, setUploadModal] = useState(false);
   const router = useRouter();
-
+  const closeModal = () => setUploadModal(false);
   useEffect(() => {
     let tokenExpiration = checkTokenExpiration(localStorage.getItem('token'))
     setAuth(tokenExpiration)
@@ -38,12 +38,12 @@ const Navbar: React.FC<NavbarProps> = ({ searchTerm, onSearchTermChange }) => {
       </div>
 
       <div className="flex items-center justify-end">
-      {!auth && <button onClick={()=>{setUploadModal(true)}} className="bg-white-700 px-2 md:px-3 py-1 md:py-2 mr-2 text-black text-sm md:text-base border-2">+ Upload</button>}
+        {!auth && <button onClick={() => { setUploadModal(true) }} className="bg-white-700 px-2 md:px-3 py-1 md:py-2 mr-2 text-black text-sm md:text-base border-2">+ Upload</button>}
         {!auth && <button onClick={() => { localStorage.removeItem('token'); router.reload() }} className="bg-pink-700 text-white px-2 md:px-4 py-2 md:py-2 text-white border-2 bg-pink-700">Sair</button>}
         {auth && <button onClick={() => { setUserModal(true) }} className="bg-pink-700 text-white px-2 md:px-4 py-2 md:py-2">Login</button>}
       </div>
       {userModal && <ModalUser isOpen={userModal} />}
-      {uploadModal && <VideoUploadModal isOpen={uploadModal} />}
+      {uploadModal && <VideoUploadModal closeModal={closeModal} isOpen={uploadModal} />}
     </nav>
   );
 };

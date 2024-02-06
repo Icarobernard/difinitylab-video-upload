@@ -21,26 +21,26 @@ export default async function handler(
       });
 
       if (!user) {
-        res.status(401).json({ error: 'Invalid email or password' });
+        res.status(401).json({ error: 'Email ou senha inválido' });
         return;
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
 
       if (passwordMatch) {
-        const token = jwt.sign({ user: user}, secretKey, {
-          expiresIn: '1h', 
+        const token = jwt.sign({ user: user }, secretKey, {
+          expiresIn: '1h',
         });
 
         res.status(200).json({ token });
       } else {
-        res.status(401).json({ error: 'Invalid email or password' });
+        res.status(401).json({ error: 'Email ou senha o inválido' });
       }
     } catch (error) {
-      console.error('Error logging in:', error);
-      res.status(500).json({ error: 'Failed to log in' });
+      console.error('Erro ao logar:', error);
+      res.status(500).json({ error: 'Falha ao logar' });
     }
   } else {
-    res.status(405).json({ error: 'Method Not Allowed' });
+    res.status(405).json({ error: 'Operação não permitida' });
   }
 }

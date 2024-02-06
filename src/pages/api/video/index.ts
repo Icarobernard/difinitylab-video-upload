@@ -1,18 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-const  multer = require('multer');
+const multer = require('multer');
 import { PrismaClient } from '@prisma/client';
 import path from 'path';
 import fs from 'fs/promises';
 
 const prisma = new PrismaClient();
 
+// Multer configuration
 const upload = multer({
   storage: multer.diskStorage({
     destination: path.join(process.cwd(), 'public', 'upload'),
     filename: (req: any, file: any, cb: any) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const fileExtension = path.extname(file.originalname);
-      cb(null, file.fieldname + '-' + uniqueSuffix + fileExtension);
+      cb(null, file.fieldname + '-' + uniqueSuffix);
     },
   }),
 });
@@ -22,14 +22,11 @@ export const config = {
     bodyParser: false,
   },
 };
-
 interface MulterNextApiRequest extends NextApiRequest {
   file: {
-    filename: any;
     path: string;
   };
 }
-
 export default async function handler(
   req: MulterNextApiRequest,
   res: NextApiResponse
@@ -62,72 +59,34 @@ export default async function handler(
 
       res.status(200).json(videos);
     } catch (error) {
-      console.error('Error fetching videos:', error);
-      res.status(500).json({ error: 'Failed to fetch videos' });
+      console.error('Erro ao buscar videos:', error);
+      res.status(500).json({ error: 'Falha ao buscar videos' });
     }
   } else if (req.method === 'POST') {
     try {
       upload.single('file')(req, res, async (err: any) => {
         if (err) {
-          console.error('Error uploading file:', err);
-          return res.status(500).json({ error: 'Failed to upload file' });
+          console.error('Erro uploading arquivo:', err);
+          return res.status(500).json({ error: 'Falha ao efetuar o upload do arquivo' });
         }
 
         const { name, description } = req.body;
-        const path = `/upload/${req.file.filename}`;
+        const path = req.file.path.replace('public', '');
 
         const newVideo = await prisma.video.create({
           data: {
             name,
             description,
             path,
-            views: 0,
+            views: 0
           },
         });
 
         res.status(201).json(newVideo);
       });
     } catch (error) {
-      console.error('Error adding video:', error);
-      res.status(500).json({ error: 'Failed to add video' });
+      console.error('Erro ao adicionar video:', error);
+      res.status(500).json({ error: 'Falha para adicionar video' });
     }
-  } else if (req.method === 'PUT') {
-    const { id, name, description, views, path } = req.body;
-
-    try {
-      const updatedVideo = await prisma.video.update({
-        where: { id },
-        data: {
-          name,
-          description,
-          views,
-          path,
-        },
-      });
-      res.status(200).json(updatedVideo);
-    } catch (error) {
-      console.error('Error updating video:', error);
-      res.status(500).json({ error: 'Failed to update video' });
-    }
-  } else if (req.method === 'DELETE') {
-    const { id, path: filePath } = req.body;
-
-    try {
-      // Delete the file from public/upload
-      const fullPath = path.join(process.cwd(), 'public', 'upload', filePath);
-      await fs.unlink(fullPath);
-
-      // Delete the record from the database
-      const deletedVideo = await prisma.video.delete({
-        where: { id },
-      });
-
-      res.status(200).json(deletedVideo);
-    } catch (error) {
-      console.error('Error deleting video:', error);
-      res.status(500).json({ error: 'Failed to delete video' });
-    }
-  } else {
-    res.status(405).json({ error: 'Method Not Allowed' });
   }
 }

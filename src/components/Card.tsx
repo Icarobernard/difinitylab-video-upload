@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import ReactPlayer from 'react-player';
 import { formatRelativeTime } from '@/utils/utils';
 
-import VideoModal from './VideoModal';
+import VideoModal from './EditVideoModal';
 import { MdEdit } from 'react-icons/md';
 
 type VideoProps = {
+  id: number;
   description: string;
   name: string;
   path: string;
@@ -40,7 +41,7 @@ const TikTokCard: React.FC<VideoProps> = (props) => {
           <div className="text-gray-500">
             {formatRelativeTime(new Date(props.createdAt))}
           </div>
-          <div title="mais opções"className="absolute top-0 right-0 m-2">
+          <div title="mais opções" className="absolute top-0 right-0 m-2">
             <button
               className="focus:outline-none"
               onClick={openModal}
@@ -60,13 +61,12 @@ const TikTokCard: React.FC<VideoProps> = (props) => {
         isOpen={isModalOpen}
         closeModal={closeModal}
         onEdit={() => {
-          console.log('Edit logic');
           closeModal();
         }}
         onDelete={() => {
-          console.log('Delete logic');
           closeModal();
         }}
+        videoProps={{ id: props.id, name: props.name, description: props.description }}
       />
     </div>
   );

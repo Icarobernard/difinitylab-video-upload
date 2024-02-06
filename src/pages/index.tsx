@@ -17,12 +17,8 @@ const Home = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Navbar */}
       <Navbar searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
-
-      {/* Main content */}
       <main className="flex-1 p-8 max-w-2xl mx-auto mt-8">
-        {/* Video Cards */}
         {isLoading && <p>Carregando vídeos...</p>}
         {isError && <p>Erro ao carregar vídeos</p>}
 

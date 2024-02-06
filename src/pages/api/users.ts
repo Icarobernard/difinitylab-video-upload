@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const jwt = require('jsonwebtoken');
+const secretKey = 'difinitylabs';
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,10 +30,13 @@ export default async function handler(
           password: hashedPassword,
         },
       });
-      res.status(201).json(newUser);
+      const token = jwt.sign({ user: newUser }, secretKey, {
+        expiresIn: '1h',
+      });
+      res.status(201).json({newUser, token: token});
     } catch (error) {
-      console.error('Error adding user:', error);
-      res.status(500).json({ error: 'Failed to add user' });
+      console.error('Erro adicionando usuario:', error);
+      res.status(500).json({ error: 'Falha ao adicionar usuário' });
     }
   } else if (req.method === 'PUT') {
     const { id, name, email, password } = req.body;
@@ -50,7 +55,7 @@ export default async function handler(
       res.status(200).json(updatedUser);
     } catch (error) {
       console.error('Error updating user:', error);
-      res.status(500).json({ error: 'Failed to update user' });
+      res.status(500).json({ error: 'Falha ao atualizar usuário' });
     }
   } else if (req.method === 'DELETE') {
     const { id } = req.body;
@@ -61,8 +66,8 @@ export default async function handler(
       });
       res.status(200).json(deletedUser);
     } catch (error) {
-      console.error('Error deleting user:', error);
-      res.status(500).json({ error: 'Failed to delete user' });
+      console.error('Erro deletando usuário:', error);
+      res.status(500).json({ error: 'Falha ao deletar usuário' });
     }
   }
 }
