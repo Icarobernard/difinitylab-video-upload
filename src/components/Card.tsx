@@ -21,10 +21,15 @@ const TikTokCard: React.FC<VideoProps> = (props) => {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className="flex mb-6 items-center">
+    <div className="flex mb-6 items-center ">
       <div className="ml-4 flex-grow">
-        <div className="relative w-full h-100 bg-gray-300 rounded-md overflow-hidden">
+        <div className="relative w-full h-100 bg-gray-300 rounded-md overflow-hidden"
+          onMouseEnter={() => setIsPlaying(true)}
+         
+          onMouseLeave={() => setIsPlaying(false)}
+        >
           <ReactPlayer
+          //  onClick={() => setIsPlaying(true)}
             url={props.path}
             width="100%"
             height="100%"
@@ -33,12 +38,12 @@ const TikTokCard: React.FC<VideoProps> = (props) => {
             playing={isPlaying}
           />
         </div>
-        <div className="mt-4 p-4 bg-white shadow-md rounded-md flex justify-between items-center relative">
+        <div className="mt-4 p-4 bg-white shadow-md rounded-md flex justify-between items-center relative dark:bg-gray-800">
           <div className="flex-grow">
             <h3 className="text-lg font-semibold mb-2">{props.name}</h3>
-            <p className="text-gray-700">{props.description}</p>
+            <p className="text-gray-700 dark:text-gray-100">{props.description}</p>
           </div>
-          <div className="text-gray-500">
+          <div className="text-gray-500 dark:text-gray-100">
             {formatRelativeTime(new Date(props.createdAt))}
           </div>
           <div title="mais opções" className="absolute top-0 right-0 m-2">
@@ -46,7 +51,6 @@ const TikTokCard: React.FC<VideoProps> = (props) => {
               className="focus:outline-none"
               onClick={openModal}
               style={{
-                background: '#fff',
                 borderRadius: '50%',
                 cursor: 'pointer',
               }}

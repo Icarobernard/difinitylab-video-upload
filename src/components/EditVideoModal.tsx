@@ -68,7 +68,7 @@ const EditVideoModal: React.FC<VideoModalProps> = ({ isOpen, closeModal, videoPr
       <div className="absolute inset-0 bg-gray-800 opacity-75" onClick={closeModal}></div>
       {userModal ?
         <ModalUser isOpen={userModal} />
-        : <div className="bg-white p-6 rounded-md z-10">
+        : <div className="bg-white p-6 rounded-md z-10 dark:bg-gray-900">
           <div className="divide-y divide-slate-200">
             <div><p onClick={() => { setEditVideo(true) }} className="text-lg  mb-4 cursor-pointer">Editar</p></div>
             <div><h2 onClick={handleDeleteVideo} className="text-lg text-rose-500 font-semibold mt-4 mb-4 cursor-pointer">Deletar</h2></div>
