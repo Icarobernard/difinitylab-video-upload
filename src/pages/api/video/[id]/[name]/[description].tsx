@@ -23,8 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           description: description?.toString(),
         },
       });
-      console.log(name)
-      res.status(200).json(updatedVideo);
+      res.status(200).json({updatedVideo, message: "Atualizado com sucesso!"});
     } catch (error) {
       console.error('Error atualizando o video:', error);
       res.status(500).json({ error: 'Falha pra atualizar o video' });

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import Card from '@/components/Card';
 import Navbar from '@/components/Navbar';
@@ -13,7 +13,17 @@ const fetchVideos = async (searchTerm: string, page: number) => {
 };
 
 const Home = () => {
+  const jwt = require('jsonwebtoken');
   const [searchTerm, setSearchTerm] = useState('');
+  const [username, setUsername] = useState('');
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const decodedTokenUser: any = jwt.decode(token || '');
+    if (token) {
+      setUsername(decodedTokenUser.user.name);
+
+    }
+  }, []);
   const {
     data,
     isLoading,
@@ -45,13 +55,13 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
        <Head>
-        <title>Difinity Sequence</title>
+       { !username ?<title>Difinity Sequence</title> : <title>{username} - DS</title> }
       </Head>
       <Navbar searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
       <main className="flex-1 p-8 max-w-2xl mx-auto mt-8">
-        {isLoading && <p>Carregando vídeos...</p>}
-        {isError && <p>Erro ao carregar vídeos</p>}
-
+        {isLoading && <p className="ml-12 font-mono text-lg text-gray-500 mt-10">Carregando vídeos...</p>}
+        {isError && <p >Erro ao carregar vídeos</p>}
+     
         {data && data.pages.map((page, pageIndex) => (
           <div key={pageIndex}>
             {page.videos.map((video: any, index: number) => {
@@ -71,6 +81,7 @@ const Home = () => {
             })}
           </div>
         ))}
+           {data?.pages[0]?.videos.length == 0 && <p className="ml-12 font-mono text-lg text-gray-500 mt-10">Nenhum vídeo para exibir</p> }
       </main>
     </div>
   );

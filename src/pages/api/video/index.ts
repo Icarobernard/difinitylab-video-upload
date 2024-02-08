@@ -51,6 +51,7 @@ export default async function handler(
 
       const videos = await prisma.video.findMany({
         where: searchCondition,
+        orderBy: { createdAt: 'desc' },
         take: pageSize as number,
         skip: (page as number - 1) * (pageSize as number),
       });
@@ -69,11 +70,13 @@ export default async function handler(
           return res.status(500).json({ error: 'Falha ao efetuar o upload do arquivo' });
         }
 
-        const { name, description } = req.body;
+        const { name, description, userId } = req.body;
         const path = `/upload/${req.file.filename}`;
-
+ 
+    
         const newVideo = await prisma.video.create({
           data: {
+            userId: Number(userId),
             name,
             description,
             path,
@@ -81,7 +84,7 @@ export default async function handler(
           },
         });
 
-        res.status(201).json(newVideo);
+        res.status(201).json({newVideo, message: "Vídeo adicionado com sucesso!"});
       });
     } catch (error) {
       console.error('Erro ao adicionar video:', error);

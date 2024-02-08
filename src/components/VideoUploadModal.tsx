@@ -1,27 +1,31 @@
+import { Toast } from '@/utils/utils';
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import Swal from 'sweetalert2';
 
 type VideoUploadModalProps = {
   isOpen: boolean;
-  closeModal: () => void;
+  setModal: (value: boolean) => void;
+  setSubModal?: (value: boolean) => void;
   videoProps?: { id: number; name: string; description: string };
 };
 
 const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   isOpen: initialIsOpen,
-  closeModal,
+  setModal,
   videoProps,
 }: VideoUploadModalProps) => {
-  
+
   const [isOpen, setIsOpen] = useState(initialIsOpen);
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState<string>(videoProps ? videoProps.name : '');
-  const [id, setId] = useState<number | undefined>(videoProps? videoProps.id : undefined);
-  console.log(id)
+  const [id, setId] = useState<number | undefined>(videoProps ? videoProps.id : undefined);
+  const [userId, setUserId] = useState<number | undefined>();
   const [description, setDescription] = useState<string>(
     videoProps ? videoProps.description : ''
   );
+
   const jwt = require('jsonwebtoken');
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -38,6 +42,7 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     const decodedTokenUser: any = jwt.decode(token || '');
     if (!videoProps) {
       setName(decodedTokenUser.user.name);
+      setUserId(decodedTokenUser.user.id);
     }
   }, [videoProps]);
 
@@ -47,13 +52,22 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
         method: 'POST',
         body: formData,
       });
-      return response.json();
+      const data = await response.json();
+      if (response.status == 201) {
+        Toast.fire({
+          icon: "success",
+          title: data.message
+        });
+      }
+      return data;
     },
     {
       onSuccess: () => {
         setIsOpen(false);
+        setModal(false);
         setFile(null);
         setName('');
+        setUserId(undefined);
         setDescription('');
         queryClient.invalidateQueries('videos');
       },
@@ -66,15 +80,28 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
         method: 'PUT',
         body: formData,
       });
-      return response.json();
+
+      const data = await response.json();
+      if (response.status == 200) {
+        Toast.fire({
+          icon: "success",
+          title: data.message
+        });
+      }
+
+      return data;
     },
     {
       onSuccess: () => {
-        setIsOpen(false);
+        
         setFile(null);
         setName('');
         setDescription('');
-        router.reload()
+
+        setTimeout(() => {
+          setIsOpen(false);
+          router.reload()
+        }, 3000)
       },
     }
   );
@@ -93,8 +120,12 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     if (id !== undefined) {
       formData.append('id', id.toString());
     }
+    if (userId !== undefined) {
+      formData.append('userId', userId.toString());
+    }
     formData.append('name', name);
     formData.append('description', description);
+
 
     if (videoProps) {
       putMutation(formData);
@@ -117,7 +148,7 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
           <button
             className="absolute top-4 right-4 text-white"
             onClick={() => {
-              router.reload();
+              setModal(false);
             }}
           >
             X
@@ -159,9 +190,10 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
             </div>
             <button
               onClick={handleUpload}
+              disabled={!videoProps ? file ? false : true : false}
               className="bg-blue-500 text-white py-2 px-4 rounded-md"
             >
-              Upload
+              {videoProps ? 'Atualizar' : 'Upload'}
             </button>
           </div>
         </div>

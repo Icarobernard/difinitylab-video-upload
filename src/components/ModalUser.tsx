@@ -208,6 +208,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen }) => {
                 onClick={() => {
                   setIsLogin(!isLogin);
                   setValidationMessage('');
+                  sessionStorage.removeItem('viewedVideos');
                 }}
               >
                 {isLogin ? 'Registrar aqui' : 'Entrar'}

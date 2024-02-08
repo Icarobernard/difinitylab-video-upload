@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export function formatRelativeTime(date: Date): string {
   const now = new Date();
   const timeDifference = now.getTime() - date.getTime();
@@ -37,3 +39,15 @@ export const checkTokenExpiration = (token: string | null): boolean => {
     return true;
   }
 };
+
+export const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast: any) => {
+    toast.onmouseenter = Swal.stopTimer;
+    toast.onmouseleave = Swal.resumeTimer;
+  }
+});

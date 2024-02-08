@@ -1,4 +1,4 @@
-import { checkTokenExpiration } from '@/utils/utils';
+import { Toast, checkTokenExpiration } from '@/utils/utils';
 import React, { useEffect, useState } from 'react';
 import ModalUser from './ModalUser';
 import { useRouter } from 'next/router';
@@ -16,7 +16,7 @@ type VideoModalProps = {
 const EditVideoModal: React.FC<VideoModalProps> = ({ isOpen, closeModal, videoProps }) => {
   const [userModal, setUserModal] = useState(false);
   const [editVideo, setEditVideo] = useState(false);
-  
+
   const router = useRouter();
 
   useEffect(() => {
@@ -40,7 +40,13 @@ const EditVideoModal: React.FC<VideoModalProps> = ({ isOpen, closeModal, videoPr
         'Content-Type': 'application/json',
       },
     });
-
+    let data = await response.json();
+    if (response.status == 200) {
+      Toast.fire({
+        icon: "success",
+        title: data.message
+      });
+    }
     if (!response.ok) {
       throw new Error('Falha ao deletar vídeo');
     }
@@ -53,7 +59,9 @@ const EditVideoModal: React.FC<VideoModalProps> = ({ isOpen, closeModal, videoPr
   const handleDeleteVideo = async () => {
     try {
       await mutateDeleteVideo(videoProps?.id);
-      router.reload();
+      setTimeout(() => {
+        router.reload()
+      }, 3000)
     } catch (error) {
       console.error('Erro deletando video:', error);
     }
@@ -72,7 +80,7 @@ const EditVideoModal: React.FC<VideoModalProps> = ({ isOpen, closeModal, videoPr
           <div className="divide-y divide-slate-200">
             <div><p onClick={() => { setEditVideo(true) }} className="text-lg  mb-4 cursor-pointer">Editar</p></div>
             <div><h2 onClick={handleDeleteVideo} className="text-lg text-rose-500 font-semibold mt-4 mb-4 cursor-pointer">Deletar</h2></div>
-            {editVideo && <VideoUploadModal videoProps={videoProps} isOpen={editVideo} closeModal={() => { setEditVideo(false) }} />}
+            {editVideo && <VideoUploadModal videoProps={videoProps} isOpen={editVideo} setModal={setEditVideo} />}
           </div>
         </div>}
     </div>

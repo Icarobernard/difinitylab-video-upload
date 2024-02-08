@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         where: { id: videoId },
       });
 
-      res.status(200).json(deletedVideo);
+      res.status(200).json({deletedVideo, message: "Vídeo deletado com sucesso!"});
     } catch (error) {
       console.error('Erro deletando o video:', error);
       res.status(500).json({ error: 'Falha ao deletar o vídeo' });
