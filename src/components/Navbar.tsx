@@ -22,7 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({ searchTerm, onSearchTermChange }) => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-10 bg-white p-3 flex justify-between items-center dark:bg-gray-900">
       <div className="flex items-center">
-        <div className="w-4 h-4 bg-green-500 rounded-full hidden md:block"></div>
+        <div className={`w-4 h-4 ${!auth ? 'bg-green-500' : 'bg-pink-700' } rounded-full hidden md:block`}></div>
         <h2 className="ml-2 font-bold text-xl hidden md:block">Difinity Sequence</h2>
         <div>
         </div>
